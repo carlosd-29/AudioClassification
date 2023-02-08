@@ -1,4 +1,4 @@
-# AudioClassification
+# Audio Classification
 
 This is a audio classificaion model. The current classes it can classify are:
 
