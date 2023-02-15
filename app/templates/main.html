@@ -16,7 +16,7 @@
         <h1 class="display-4">Audio Classifier</h1>
         <p class="lead">This is a simple audio classifier for 20 different classes</p>
         <hr class="my-4">
-        <p>Click <a href="https://github.com/carlosd-29/AudioClassification">Learn more</a> to get more information on the model or upload your audio file (*.wav) to classify it.</p>
+        <p>Click <a href="https://github.com/carlosd-29/AudioClassification">Learn more</a> to get more information on the model or upload your audio/video file (*.wav, *mp3, *.mp4) to classify it. (Note: There is a file duration limit to 60 seconds)</p>
 
         <form action="{{url_for('classify')}}" method = "POST" enctype="multipart/form-data">
           <p><input type="file" name="file"></p>

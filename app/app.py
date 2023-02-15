@@ -83,6 +83,11 @@ def parseAudio(wavFile):
     waveform, sample_rate = librosa.load("static/"+ wavFile, sr=None)
     segment_dur = 5
     segment_length = sample_rate * segment_dur
+
+    
+    if len(waveform) / sample_rate > 60:
+        print("The file duration is:", len(waveform) / sample_rate )
+        return None, "Audio file is too long"
     num_sections = int(np.ceil(len(waveform) / segment_length))
     imgFile = ""
 
@@ -128,6 +133,8 @@ def classify():
         wavFile = wavFile.split('.')[0] + '.mp3'
 
     prediction, imgFile = parseAudio(wavFile)
+    if prediction is None:
+        return render_template("tooLong.html")
     return render_template("classify.html",imgFile=imgFile,wavFile=wavFile, prediction=prediction)
             
 if __name__ == "__main__":
