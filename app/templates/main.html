@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
+
+</head>
+<body>
+    <div class="jumbotron">
+        <h1 class="display-4">Audio Classifier</h1>
+        <p class="lead">This is a simple audio classifier for 20 different classes</p>
+        <hr class="my-4">
+        <p>Click <a href="https://github.com/carlosd-29/AudioClassification">Learn more</a> to get more information on the model or upload your audio file (*.wav) to classify it.</p>
+
+        <form action="{{url_for('classify')}}" method = "POST" enctype="multipart/form-data">
+          <p><input type="file" name="file"></p>
+          <p><input type="submit" value="Submit"></p>
+        </form>
+
+        <!-- <a href="classify.html" class="btn btn-secondary" tabindex="-1" role="button">Choose File</a>-->
+
+        <!--Add button to each item and playback an example-->
+
+    <p class="lead">These are the current supported classes:</p>
+    <ul class="list-group list-group-horizontal">
+        <li class="list-group-item">airplane</li>
+        <li class="list-group-item">breathing</li>
+        <li class="list-group-item">brushing teeth</li>
+        <li class="list-group-item">can opening</li>
+        <li class="list-group-item">car horn</li>
+      </ul>
+      <ul class="list-group list-group-horizontal-sm">
+        <li class="list-group-item">cat</li>
+        <li class="list-group-item">chainsaw</li>
+        <li class="list-group-item">chirping birds</li>
+        <li class="list-group-item">church bells</li>
+        <li class="list-group-item">clapping</li>
+      </ul>
+      <ul class="list-group list-group-horizontal-md">
+        <li class="list-group-item">clock alarm</li>
+        <li class="list-group-item">clock tick</li>
+        <li class="list-group-item">coughing</li>
+        <li class="list-group-item">cow</li>
+        <li class="list-group-item">crackling fire</li>
+      </ul>
+      <ul class="list-group list-group-horizontal-lg">
+        <li class="list-group-item">crickets</li>
+        <li class="list-group-item">crow</li>
+        <li class="list-group-item">crying baby</li>
+        <li class="list-group-item">dog</li>
+        <li class="list-group-item">door wood creaks</li>
+      </ul>
+      
+</body>
+</html>
