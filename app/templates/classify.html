@@ -14,7 +14,7 @@
     
     <div class="jumbotron">
         <h1 class="display-4">Class Prediction</h1>
-        <p class="lead">The prediction for {{imgFile}} is: <b>{{prediction}}</b></p>
+        <p class="lead">The predictions in order of likelihod for {{imgFile}} are: <b>1. {{prediction[0]}} 2. {{prediction[1]}} 3. {{prediction[2]}} </b></p>
         <hr class="my-4">
         <img src="static/{{imgFile}}" alt="Image not found">
 
@@ -26,6 +26,7 @@
           <form>
             <input type="button" value="Retry" onclick="history.back()">
            </form>
+           
 
       </div>
       

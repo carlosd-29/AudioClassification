@@ -25,8 +25,8 @@ class CNNet(nn.Module):
         #self.batch_norm48 = nn.BatchNorm2d(48)
        # self.batch_norm64 = nn.BatchNorm2d(64)
         self.flatten = nn.Flatten()
-        self.fc1 = nn.Linear(4096, 200)
-        self.fc2 = nn.Linear(200, 20)
+        self.fc1 = nn.Linear(7680, 200)
+        self.fc2 = nn.Linear(200, 50)
 
 
     def forward(self, x):
@@ -50,33 +50,35 @@ def create_spec(wavFile):
     XS = librosa.feature.melspectrogram(X, sr=sample_rate)
     Xdb = librosa.amplitude_to_db(XS, ref=np.max)
     librosa.display.specshow(Xdb, sr=sample_rate)
-
+    plt.subplots_adjust(0,0,1,1)
     imgFile = wavFile.split('.')[0]+".png"
-    plt.savefig("static/"+imgFile, pad_inches=0.0, bbox_inches='tight')
+    plt.savefig("static/"+imgFile)
     return imgFile
 
 def run_prediction(imageFile):
     image = Image.open("static/"+imageFile)
-    transform=transforms.Compose([transforms.Resize((288,432)),transforms.ToTensor()])
+    transform=transforms.Compose([transforms.Resize((369, 496)),transforms.ToTensor()])
 
     transformed_image = transform(image)[:3].unsqueeze(0)
 
     loaded_model = CNNet()
-    loaded_model.load_state_dict(torch.load('trained_for_20_76_7.pth'))
+    loaded_model.load_state_dict(torch.load('trained_for_spectrogram_resized_50.pth'))
     loaded_model.eval()
     pred = loaded_model(transformed_image)
-    _, predicted = torch.max(pred.data, 1)
+    _, predicted = torch.topk(pred.data, 3)
 
-    
+    print("These are the predicted", predicted)
     #Read json file with classes
     with open('classes.json') as json_file:
         class_map  = json.load(json_file)
 
+    predictions = []
     for key, value in class_map.items():
-        if predicted.item() == value:
-            print("The predicted value is:", key)
-            return key
-    return "Class is not supported"
+        if value in predicted[0]:
+            predictions.append(key)
+    if len(predictions) == 0:
+        return "Class is not supported"
+    return predictions
 
 #Handle audios that are longer than 5 seconds
 def parseAudio(wavFile):
@@ -107,7 +109,16 @@ def parseAudio(wavFile):
         imgFile = create_spec(wavFile)
         prediction = run_prediction(imgFile)
         predictions.append(prediction)
-    final_prediction = max(set(predictions), key=predictions.count)
+
+    #Generating top 3 predictions
+    predictions_sorted = [] #Will hold all top 1 in one list, top 2 in another list, so on
+    for iter_pred in range(3):
+        predictions_sorted.append([ x[iter_pred] for x in predictions])
+    final_prediction = []
+    for top_pred in predictions_sorted:
+        final_prediction.append(max(set(top_pred)))
+    print("Final prediction", final_prediction)
+
     return final_prediction, imgFile
         
 def video_to_audio(videoFile):
@@ -128,7 +139,8 @@ def classify():
 
     #check if video file
     ext = wavFile.split(".")[1]
-    if ext != ".wav" or ext != '.mp3':
+    print("This is the extion", ext)
+    if ext != "wav" and ext != 'mp3':
         video_to_audio(wavFile)
         wavFile = wavFile.split('.')[0] + '.mp3'
 
