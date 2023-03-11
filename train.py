@@ -1,5 +1,6 @@
 from dataset import *
 
+
 melspectrogram_train_dataset, melspectrogram_test_dataset = load_images()
 class_map=melspectrogram_train_dataset.class_to_idx
 print("\nClass category and index of the images: {}\n".format(class_map))
@@ -16,6 +17,8 @@ test_dataloader = torch.utils.data.DataLoader(
     shuffle=True
 )
 
+
+
 class CNNet(nn.Module):
     def __init__(self):
         super().__init__()
@@ -26,8 +29,8 @@ class CNNet(nn.Module):
         self.conv5 = nn.Conv2d(128, 128, kernel_size=(6,6))
         self.conv_drop = nn.Dropout2d()
         self.flatten = nn.Flatten()
-        self.fc1 = nn.Linear(4096, 200)
-        self.fc2 = nn.Linear(200, 20)
+        self.fc1 = nn.Linear(7680, 200)
+        self.fc2 = nn.Linear(200, 50)
 
 
     def forward(self, x):
@@ -69,21 +72,30 @@ def train(dataloader, model, loss, optimizer):
 
 # Create the validation/test function
 
-def test(dataloader, model):
+def test(dataloader, model, k_classes):
     size = len(dataloader.dataset)
     model.eval()
-    test_loss, correct = 0, 0
+    test_loss, top_1_correct, top_k_correct, top_k_prev_correct = 0, 0, 0, 0
 
     with torch.no_grad():
         for batch, (X, Y) in enumerate(dataloader):
             pred = model(X)
 
             test_loss += cost(pred, Y).item()
-            correct += (pred.argmax(1)==Y).type(torch.float).sum().item()
+            top_1_correct += (pred.argmax(1)==Y).type(torch.float).sum().item()
+            k_pred = pred.topk(k_classes, dim=1).indices
+            k_pred_prev = pred.topk(k_classes-1, dim=1).indices
+            for dim in range(len(Y)):
+                if (Y[dim].item() in k_pred[dim]):
+                    top_k_correct += 1
+                if (Y[dim].item() in k_pred_prev[dim]):
+                    top_k_prev_correct += 1
+                
 
-    correct /= size
-
-    print(f'\nTest Error:\nacc: {100*correct}%')
+    top_1_correct /= size
+    top_k_correct /= size
+    top_k_prev_correct /= size
+    print(f'\nTest Error:\ntop 1 acc: {(100*top_1_correct):>0.1f}%,top {k_classes-1} acc:{(100*top_k_prev_correct):>0.1f}%, top {k_classes} acc:{(100*top_k_correct):>0.1f}%')
     
 
 epochs = 25
@@ -91,7 +103,7 @@ epochs = 25
 for t in range(epochs):
     print(f'Epoch {t+1}\n-------------------------------')
     train(train_dataloader, model, cost, optimizer)
-    test(test_dataloader, model)
+    test(test_dataloader, model, 3)
 print('Done!')
 
-torch.save(model.state_dict(), 'trained_for_20_76_7.pth')
+torch.save(model.state_dict(), 'trained_for_spectrogram_resized_50.pth')
