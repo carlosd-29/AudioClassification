@@ -7,6 +7,7 @@ import json
 import soundfile as sf
 from moviepy.editor import VideoFileClip
 from dataset import *
+from os.path import isfile, join
 
 app = Flask(__name__)
 
@@ -127,8 +128,19 @@ def video_to_audio(videoFile):
     fileout = os.path.join("static",f"{filename}.mp3")
     clip.audio.write_audiofile(fileout)
 
+
+def delete_static():
+    files = os.listdir("static/")
+    for file in files:
+        if isfile(join('static', file)):
+            ext = file.split('.')[1]
+            if ext in ['wav', 'png', 'mp3', 'mp4']:
+                print(file)
+                os.remove(join('static', file))
 @app.route("/")
 def index():
+    #static and delete anything that was there before
+    delete_static()
     return render_template('main.html')
 
 @app.route('/classify', methods = ['POST']) 
