@@ -9,12 +9,12 @@ print("\nClass category and index of the images: {}\n".format(class_map))
 train_dataloader = torch.utils.data.DataLoader(
     melspectrogram_train_dataset,
     batch_size=4,
-    shuffle=True                                           
+    shuffle=False                                           
 )
 test_dataloader = torch.utils.data.DataLoader(
     melspectrogram_test_dataset,
     batch_size=4,
-    shuffle=True
+    shuffle=False
 )
 
 
